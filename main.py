@@ -1,4 +1,5 @@
 import praw
+import prawcore
 import json
 import matplotlib.pyplot as plt
 
@@ -29,6 +30,7 @@ class LoginSession(object):
     def jsonLoginInfo(self, loginInfo):
         f = open('loginInfo.json', 'w')
         json.dump(loginInfo, f)
+        f.close()
 
     def getLoginInfo(self):
         f = open('loginInfo.json', 'r')
@@ -56,15 +58,37 @@ class LoginSession(object):
 
 
 def findUserActivity(reddit, user):
+    """
+    Params:
+        reddit - a praw reddit instance
+        user - a username string.
+    Returns:
+        A dictionary with subreddit-frequency items.
+
+    Uses praw to get a given user's recent comments and submissions. 'Recently'
+    as in there previous 60 comments and submissions.
+    """
     subFrequency = {}
     for comment in  praw.models.Redditor(reddit, user).comments.new(limit = 60):
         if comment.subreddit in subFrequency:
             subFrequency[comment.subreddit.display_name] += 1
         else:
             subFrequency[comment.subreddit.display_name] = 1
+
+    for comment in  praw.models.Redditor(reddit, user).submissions.new(limit = 60):
+        if comment.subreddit in subFrequency:
+            subFrequency[comment.subreddit.display_name] += 1
+        else:
+            subFrequency[comment.subreddit.display_name] = 1
+
     return subFrequency
 
 def generateActivityDisplay(userActivity):
+    """
+    Params:
+        userActivity - a dictionary with subreddit-frequency items.
+    Uses matplotlib to plot user activity as a pie chart.
+    """
 
     lists = sorted(userActivity.items())
     keys, values = zip(*lists)
@@ -74,6 +98,15 @@ def generateActivityDisplay(userActivity):
     plt.show()
 
 reddit = LoginSession().reddit
-while True:
+user = None
+print('Enter a blank username to quit')
+
+while user != '':
     user = input("Enter username to parse: ")
-    generateActivityDisplay(findUserActivity(reddit, user))
+    try:
+        generateActivityDisplay(findUserActivity(reddit, user))
+    except TypeError:
+        print("Thanks for using CLI-UserParticipation")
+        quit()
+    except prawcore.exceptions.NotFound:
+        print("{} doesn't appear to exist. Please Try again".format(user))

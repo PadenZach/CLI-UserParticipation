@@ -44,3 +44,10 @@ won't be discussed here, getting a client id and secret will be.
   ```
   python3 main.py
   ```
+
+## Todo:
+  - Create options for parsing larger sections of a user's history.
+  - Create option to parse upvotes as participation
+  - Create option to create multiple graphs by type of participation (ie: upvote graph, comment graph, etc.)
+  - Refactor to be a true command line app, instead of a python script.
+  - Continue refining error handling.
