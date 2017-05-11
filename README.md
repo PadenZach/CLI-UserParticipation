@@ -32,3 +32,15 @@ won't be discussed here, getting a client id and secret will be.
   ```
   Note that you *may* need to run that command as sudo for it to install
   correctly.
+
+## Running:
+  Simply download the main.py file and run. However, I suggest that you put it
+  int it's own directory given that it will generate a json file containing your
+  login info, client id, and client secret. This is kept locally simply to make
+  it easier to use the script again, without having to type in your client info
+  everytime you run the scipt.
+
+  Example running command:
+  ```
+  python3 main.py
+  ```
