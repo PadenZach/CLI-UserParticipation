@@ -10,10 +10,9 @@ Options:
     -s --simple    Display ASCII style graphs instead of matplotlib.
     -d --differ    Break up participation graphs by type of participation.
 """
-
+# TODO (zpaden) Investigate percentages, appears to be subsFound/Total???
 # TODO (zpaden) Implement option to try to count upvotes for participation
 # TODO (zpaden) Implement option to display types of participation seperately
-# TODO (zpaden) Implement ASCII graphs as an option in place of matplotlib
 # TODO (zpaden) Consider changing LoginSession, does it need to be an Object?
 # TODO (zpaden) Work with 'bad' path and improve error handling.
 
@@ -133,14 +132,14 @@ def findUserActivity(reddit, user):
     """
     subFrequency = {}
     for comment in praw.models.Redditor(reddit, user).comments.new(limit=60):
-        if comment.subreddit in subFrequency:
+        if comment.subreddit.display_name in subFrequency:
             subFrequency[comment.subreddit.display_name] += 1
         else:
             subFrequency[comment.subreddit.display_name] = 1
 
     for comment in praw.models.Redditor(reddit, user).submissions.new(
             limit=60):
-        if comment.subreddit in subFrequency:
+        if comment.subreddit.display_name in subFrequency:
             subFrequency[comment.subreddit.display_name] += 1
         else:
             subFrequency[comment.subreddit.display_name] = 1
@@ -148,39 +147,50 @@ def findUserActivity(reddit, user):
     return subFrequency
 
 
-def generateActivityDisplay(userActivity):
+def generateActivityDisplay(userActivity, simple=False):
     """Given user activity, Generate graph to display it via matplotlib.
 
     Params:
         userActivity - a dictionary with subreddit-frequency items.
     Uses matplotlib to plot user activity as a pie chart.
     """
-    lists = sorted(userActivity.items())
-    keys, values = zip(*lists)
-    fig1, ax1 = plt.subplots()
-    ax1.pie(values, labels=keys, autopct='%1.1f%%')
-    ax1.axis('equal')
-    plt.show()
+    if not simple:
+        lists = sorted(userActivity.items())
+        keys, values = zip(*lists)
+        fig1, ax1 = plt.subplots()
+        ax1.pie(values, labels=keys, autopct='%1.1f%%')
+        ax1.axis('equal')
+        plt.show()
+    else:
+        total = sum(userActivity.values())
+        for item in userActivity.items():
+            percentage = (item[1]/total)
+            graph_string = "█"*round(80*(percentage))
+            print(item[0])
+            print(graph_string + " %{:04.2f} \n".format(percentage*100))
 
 
 if __name__ == '__main__':
     args = docopt.docopt(__doc__)
-    if args['--differ'] is True or args['--simple'] is True:
+    if args['--differ']:
         print("This/These options are not implemented. Ignoring.")
-    if args['--config'] is True:
+
+    if args['--config']:
         try:
             os.remove('loginInfo.json')
         except FileNotFoundError:
             pass
         LoginSession()
+
     if args['<username>'] is not None:
         reddit = LoginSession().reddit
         try:
-            generateActivityDisplay(
-                findUserActivity(reddit, args['<username>']))
-        except TypeError:
-            print("Thanks for using CLI-UserParticipation")
-            quit()
+            if args['--simple']:
+                generateActivityDisplay(
+                    findUserActivity(reddit, args['<username>']), True)
+            else:
+                generateActivityDisplay(
+                    findUserActivity(reddit, args['<username>']))
         except prawcore.exceptions.NotFound:
             print("{} doesn't appear to exist. Please Try again".format(
                 args['<username>']))

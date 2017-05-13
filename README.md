@@ -18,7 +18,7 @@ well as a reddit account. Creation of a reddit accout is obvious and isn't cover
   - Under 'developed applications' find the app you created and click edit, this will allow you to view your client secret. The client id is the shorter key under the 'personal use script' text.
 
 ##### Requirements:
-  - python3.5 (Although other versions of 3 may work.)
+  - python 3.5 (Although other versions of 3 may work.)
   - praw
   - matplotlib
   - docopt
