@@ -22,6 +22,7 @@ well as a reddit account. Creation of a reddit accout is obvious and isn't cover
   - praw
   - matplotlib
   - docopt
+
   If you already have python3.5+ and pip3 on your system try this command for installing the requirements via pip:
 
   ```
@@ -30,11 +31,11 @@ well as a reddit account. Creation of a reddit accout is obvious and isn't cover
   Note that you *may* need to run that command as sudo for it to install the module.
 
 ## Running:
-  Download the main.py file and run. I suggest that you put it in it's own directory given that it will generate a json file containing your login info, client id, and client secret.
+  Download the CLI-UserParticipation.py file and run. I suggest that you put it in it's own directory given that it will generate a json file containing your login info, client id, and client secret.
   The program stores your client information and reddit account information locally as a json file.
   This way you don't need to reenter your information each time you run the program.
 
   Example running command:
   ```
-  python3 main.py
+  python3 CLI-UserParticipation.py
   ```
