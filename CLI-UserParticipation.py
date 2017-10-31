@@ -10,11 +10,8 @@ Options:
     -s --simple    Display ASCII style graphs instead of matplotlib.
     -d --differ    Break up participation graphs by type of participation.
 """
-# TODO (zpaden) Investigate percentages, appears to be subsFound/Total???
-# TODO (zpaden) Implement option to try to count upvotes for participation
-# TODO (zpaden) Implement option to display types of participation seperately
-# TODO (zpaden) Consider changing LoginSession, does it need to be an Object?
-# TODO (zpaden) Work with 'bad' path and improve error handling.
+# TODO (zpaden) Refactor code to be more object oriented(?)
+# TODO (zpaden) Refactor for packaging.
 
 import os
 import praw
@@ -151,7 +148,8 @@ def generateActivityDisplay(userActivity, simple=False):
     """Given user activity, Generate graph to display it via matplotlib.
 
     Params:
-        userActivity - a dictionary with subreddit-frequency items.
+        userActivity - dictionary with subreddit-frequency items.
+        simple - boolean to use MatPlotLib or ascii characters; false by default
     Uses matplotlib to plot user activity as a pie chart.
     """
     if not simple:
@@ -163,15 +161,21 @@ def generateActivityDisplay(userActivity, simple=False):
         plt.show()
     else:
         total = sum(userActivity.values())
-        for item in userActivity.items():
+        # sort userActivity by value so that particpation is displayed desc
+        userActivity = sorted(userActivity.items(), key=lambda item: item[1],
+                              reverse=True)
+
+        for item in userActivity:
             percentage = (item[1]/total)
-            graph_string = "█"*round(80*(percentage))
+            graph_string = "█"*round(CONSOLE_WIDTH*(percentage))
             print(item[0])
             print(graph_string + " %{:04.2f} \n".format(percentage*100))
 
 
 if __name__ == '__main__':
     args = docopt.docopt(__doc__)
+    CONSOLE_WIDTH = 80
+
     if args['--differ']:
         print("This/These options are not implemented. Ignoring.")
 
